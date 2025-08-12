@@ -5,9 +5,9 @@ CRGB leds[1];
 
 void setupUI()
 {
-  FastLED.addLeds<WS2812B, 47, RGB>(leds, 1);
-  ledColor(64, 0, 0);
+  FastLED.addLeds<WS2812B, 21, GRB>(leds, 1);
   pinMode(0, INPUT_PULLUP);
+  sensorData.chargeState = chg_normal;
 }
 
 void ledColor(uint8_t r, uint8_t g, uint8_t b)
@@ -16,6 +16,7 @@ void ledColor(uint8_t r, uint8_t g, uint8_t b)
   FastLED.show();
 }
 
+static int8_t lastCharge = -1;
 void loopUI()
 {
   static int8_t dbb = 0;
@@ -24,19 +25,90 @@ void loopUI()
   dbb = LIMIT(dbb, -10, 10);
 
   static int8_t dbj = 0;
-  dbj += (joystickReport.buttons == 3072 ? 1 : -1);
+  dbj += ((BUTTON(10) && BUTTON(11)) ? 1 : -1);
   dbj = LIMIT(dbj, -10, 10);
-  if ((dbb == 0 && b == -1) || (dbj == 0 && joystickReport.buttons == 3072))
+  if ((dbb == 0 && b == -1) || (dbj == 0 && BUTTON(10) && BUTTON(11)))
   {
     if (!wifiOn)
     {
       setupWifi();
       setupOta();
       setupInputOutput();
+      lastCharge = -1;
     }
     else
     {
       disconnectWifi();
+      lastCharge = -1;
     }
   }
+
+  if (sensorData.chargeState != chg_empty)
+  {
+         if (sensorData.voltage > 21.0f) sensorData.chargeState = chg_normal;
+    else if (sensorData.voltage > 20.5f) sensorData.chargeState = chg_low;
+    else if (sensorData.voltage > 20.0f) sensorData.chargeState = chg_critical;
+    else                                 sensorData.chargeState = chg_empty;
+  }
+
+  if (sensorData.chargeState != lastCharge)
+  {
+    lastCharge = sensorData.chargeState;
+    switch (sensorData.chargeState)
+    {
+      case chg_normal:
+      {
+        if (wifiOn) ledColor(0, 0, 64);
+        else ledColor(0, 32, 0);
+        break;
+      }
+      case chg_low:
+      {
+        ledColor(64, 32, 0);
+        break;
+      }
+      case chg_critical:
+      {
+        ledColor(64, 0, 0);
+        break;
+      }
+      case chg_empty:
+      {
+        actuator.disabled = true;
+        disconnectWifi();
+        disconnectBLE();
+        break;
+      }
+    }
+  }
+
+  if (sensorData.chargeState == chg_empty)
+  {
+    static uint8_t loop = 0;
+    if (loop == 0) ledColor(64, 0, 0);
+    if (loop == 25) ledColor(0, 0, 0);
+    loop++;
+  }
+
+  if (BUTTON(0)) controlMode = 0;
+  if (BUTTON(1)) controlMode = 1;
+  if (BUTTON(3)) controlMode = 2;
+  if (BUTTON(4))
+  {
+    controlMode = 3;
+    controlState.targetPitchI = 0;
+    controlState.targetRollI = 0;
+  }
+
+  static uint8_t lastHat = 15;
+  if (joystickTimeout)
+  {
+    if (joystickReport.hat != lastHat)
+    {
+      lastHat = joystickReport.hat;
+      if (joystickReport.hat == 0) controlPara.detents++;
+      if (joystickReport.hat == 4 && controlPara.detents > 1) controlPara.detents--;
+    }
+  }
+
 }

@@ -147,3 +147,8 @@ void loopBLE()
     }
   }
 }
+
+void disconnectBLE()
+{
+  NimBLEDevice::deinit();
+}

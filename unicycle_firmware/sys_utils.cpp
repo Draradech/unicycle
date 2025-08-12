@@ -18,7 +18,7 @@ void fastTask(void *p)
   for (;;)
   {
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-    digitalWrite(4, HIGH);
+    digitalWrite(3, HIGH);
     uint32_t t1 = esp_cpu_get_cycle_count();
     loop250us();
     cnt++;
@@ -33,7 +33,7 @@ void fastTask(void *p)
     sensorData.taskTime[1][ttmax] = max(sensorData.taskTime[1][ttmax], dt);
     sensorData.taskTime[1][ttsum] += dt;
     sensorData.taskTime[1][ttnum]++;
-    digitalWrite(4, LOW);
+    digitalWrite(3, LOW);
   }
 }
 
@@ -56,13 +56,13 @@ void slowTask(void *p)
 
 void setupSystem()
 {
-  pinMode(4, OUTPUT);
+  pinMode(3, OUTPUT);
   pinMode(2, OUTPUT);
 
   xTaskCreatePinnedToCore(fastTask, "fast", 4096, nullptr, 16, &fastHandle, 1);
   xTaskCreatePinnedToCore(slowTask, "slow", 4096, nullptr, 15, &slowHandle, 1);
 
-  hw_timer_t *hwtim = timerBegin(/*freq=*/1000000);
+  hw_timer_t *hwtim = timerBegin(1000000);
   timerAttachInterrupt(hwtim, &fastISR);
-  timerAlarm(hwtim, /*compare=*/250, /*autoReload=*/true, /*reloadCount=*/0);
+  timerAlarm(hwtim, 250, true, 0);
 }

@@ -1,9 +1,9 @@
 #include "stdinc.h"
 
-#define CS_PIN 8
-#define MISO_PIN 9
-#define MOSI_PIN 7
+#define CS_PIN 4
+#define MOSI_PIN 5
 #define SCK_PIN 6
+#define MISO_PIN 7
 bool spi = true;
 
 SPIClass SPI3(HSPI);
@@ -19,18 +19,25 @@ void setupSensors()
   gIMU.setAccSampleRateDivider(0);
   gIMU.setGyrDLPF(ICM20948_DLPF_7);
   gIMU.setGyrSampleRateDivider(0);
+  gIMU.setGyrRange(ICM20948_GYRO_RANGE_500);
   gIMU.setTempDLPF(ICM20948_DLPF_6);
 }
 
 float stage1 = 22.2f;
 void loopSensors()
 {
-  float volt = (analogRead(1) + 270.0f) / 112.0f;
-  stage1 = PT1(volt, stage1, 500);
-  sensorData.voltage = PT1(stage1, sensorData.voltage, 500);
+  float volt = (analogRead(1) + 61.4f) / 108.6f;
+  stage1 = PT1(volt, stage1, 100);
+  sensorData.voltage = PT1(stage1, sensorData.voltage, 100);
   gIMU.readSensor();
   gIMU.getGValues(&sensorData.acc);
   gIMU.getGyrValues(&sensorData.gyro);
   gIMU.getMagValues(&sensorData.magnet);
   sensorData.temp = gIMU.getTemperature();
+  sensorData.pitchAngleAcc = atan2(sensorData.acc.x, -sensorData.acc.z) * 180.0f / 3.1416f;
+  sensorData.rollAngleAcc = atan2(sensorData.acc.y, -sensorData.acc.z) * 180.0f / 3.1416f;
+  sensorData.pitchAngle += sensorData.gyro.y * LOOP_S;
+  sensorData.rollAngle -= sensorData.gyro.x * LOOP_S;
+  sensorData.pitchAngle = PT1(sensorData.pitchAngleAcc, sensorData.pitchAngle, 2000);
+  sensorData.rollAngle = PT1(sensorData.rollAngleAcc, sensorData.rollAngle, 2000);
 }

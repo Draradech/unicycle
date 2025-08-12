@@ -14,6 +14,14 @@ enum tt
   tt_size
 };
 
+enum charge
+{
+  chg_normal,
+  chg_low,
+  chg_critical,
+  chg_empty
+};
+
 typedef struct
 {
   xyzFloat acc;
@@ -22,12 +30,17 @@ typedef struct
   float temp;
   uint16_t taskTime[2][tt_size];
   float voltage;
-  int8_t button;
+  int8_t chargeState;
+  float pitchAngleAcc;
+  float rollAngleAcc;
+  float pitchAngle;
+  float rollAngle;
 } SSensorData;
 
 typedef struct
 {
-  float torque;
+  float torque1;
+  float torque2;
   bool disabled;
 } SActuator;
 
@@ -36,11 +49,25 @@ typedef struct
   float current;
   float detents;
   float d;
-  float reverse; 
+  float reverse;
+  float iPartSpeed;
+  float pPartSpeed;
+  float pPartPitch;
+  float dPartPitch;
+  float iPartSpeedRoll;
+  float pPartSpeedRoll;
+  float pPartRoll;
+  float dPartRoll;
+  float rollWP;
 } SControlPara;
 
 typedef struct
 {
+  float targetPitchI;
+  float targetPitch;
+  float targetRollI;
+  float targetRoll;
+  bool rollActive;
 } SControlState;
 
 typedef struct __attribute__((__packed__)) {
@@ -56,8 +83,9 @@ typedef struct __attribute__((__packed__)) {
 
 globl joystick_t joystickReport;
 globl uint8_t joystickTimeout;
+globl bool wifiOn;
+globl uint8_t controlMode;
 globl SSensorData sensorData;
 globl SActuator actuator;
 globl SControlPara controlPara;
 globl SControlState controlState;
-globl bool wifiOn;

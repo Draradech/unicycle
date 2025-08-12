@@ -10,7 +10,7 @@ void setupOta()
 
   ArduinoOTA.onStart([]() {
     actuator.disabled = true;
-    ledColor(0, 0, 64);
+    ledColor(64, 0, 64);
   });
 
   ArduinoOTA.onEnd([]() {
