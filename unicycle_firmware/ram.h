@@ -46,10 +46,6 @@ typedef struct
 
 typedef struct
 {
-  float current;
-  float detents;
-  float d;
-  float reverse;
   float iPartSpeed;
   float pPartSpeed;
   float pPartPitch;
@@ -84,7 +80,6 @@ typedef struct __attribute__((__packed__)) {
 globl joystick_t joystickReport;
 globl uint8_t joystickTimeout;
 globl bool wifiOn;
-globl uint8_t controlMode;
 globl SSensorData sensorData;
 globl SActuator actuator;
 globl SControlPara controlPara;

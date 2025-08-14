@@ -1,9 +1,5 @@
 //ENTRY(ID, var,                     increment,    unit,    name                              )
 
-ENTRY('1',  controlPara.current,          0.01,     "A",    "current"                         )
-ENTRY('2',  controlPara.detents,          1.0,       "",    "detents"                         )
-ENTRY('3',  controlPara.d,                1.0,       "",    "d"                               )
-ENTRY('4',  controlPara.reverse,          1.0,       "",    "reverse"                         )
 ENTRY('5',  motor1.zero_electric_angle,  0.01,    "rad",    "M1 zero electric angle"          )
 ENTRY('6',  motor2.zero_electric_angle,  0.01,    "rad",    "M2 zero electric angle"          )
 ENTRY('a',  controlPara.iPartSpeed,      0.01,       "",    "i part speed"                    )

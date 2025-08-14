@@ -34,10 +34,12 @@ void loopSensors()
   gIMU.getGyrValues(&sensorData.gyro);
   gIMU.getMagValues(&sensorData.magnet);
   sensorData.temp = gIMU.getTemperature();
-  sensorData.pitchAngleAcc = atan2(sensorData.acc.x, -sensorData.acc.z) * 180.0f / 3.1416f;
-  sensorData.rollAngleAcc = atan2(sensorData.acc.y, -sensorData.acc.z) * 180.0f / 3.1416f;
+  float pitchAcc = atan2(sensorData.acc.x, -sensorData.acc.z) * 180.0f / 3.1416f;
+  sensorData.pitchAngleAcc = PT1(pitchAcc, sensorData.pitchAngleAcc, 1000);
+  float rollAcc = atan2(sensorData.acc.y, -sensorData.acc.z) * 180.0f / 3.1416f;
+  sensorData.rollAngleAcc = PT1(rollAcc, sensorData.rollAngleAcc, 1000);
   sensorData.pitchAngle += sensorData.gyro.y * LOOP_S;
   sensorData.rollAngle -= sensorData.gyro.x * LOOP_S;
-  sensorData.pitchAngle = PT1(sensorData.pitchAngleAcc, sensorData.pitchAngle, 2000);
-  sensorData.rollAngle = PT1(sensorData.rollAngleAcc, sensorData.rollAngle, 2000);
+  sensorData.pitchAngle = PT1(sensorData.pitchAngleAcc, sensorData.pitchAngle, 1000);
+  sensorData.rollAngle = PT1(sensorData.rollAngleAcc, sensorData.rollAngle, 1000);
 }

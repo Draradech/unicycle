@@ -19,6 +19,8 @@ void ledColor(uint8_t r, uint8_t g, uint8_t b)
 static int8_t lastCharge = -1;
 void loopUI()
 {
+  if(joystickTimeout) joystickTimeout--;
+  
   static int8_t dbb = 0;
   int8_t b = digitalRead(0) * 2 - 1;
   dbb += b;
@@ -58,18 +60,20 @@ void loopUI()
     {
       case chg_normal:
       {
-        if (wifiOn) ledColor(0, 0, 64);
+        if (wifiOn) ledColor(0, 32, 64);
         else ledColor(0, 32, 0);
         break;
       }
       case chg_low:
       {
-        ledColor(64, 32, 0);
+        if (wifiOn) ledColor(64, 32, 64);
+        else ledColor(64, 32, 0);
         break;
       }
       case chg_critical:
       {
-        ledColor(64, 0, 0);
+        if (wifiOn) ledColor(64, 0, 64);
+        else ledColor(64, 0, 0);
         break;
       }
       case chg_empty:
@@ -89,26 +93,4 @@ void loopUI()
     if (loop == 25) ledColor(0, 0, 0);
     loop++;
   }
-
-  if (BUTTON(0)) controlMode = 0;
-  if (BUTTON(1)) controlMode = 1;
-  if (BUTTON(3)) controlMode = 2;
-  if (BUTTON(4))
-  {
-    controlMode = 3;
-    controlState.targetPitchI = 0;
-    controlState.targetRollI = 0;
-  }
-
-  static uint8_t lastHat = 15;
-  if (joystickTimeout)
-  {
-    if (joystickReport.hat != lastHat)
-    {
-      lastHat = joystickReport.hat;
-      if (joystickReport.hat == 0) controlPara.detents++;
-      if (joystickReport.hat == 4 && controlPara.detents > 1) controlPara.detents--;
-    }
-  }
-
 }
