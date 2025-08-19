@@ -8,6 +8,7 @@
 #define PERIODUS (1000000 / FREQUENCY)
 #define CYCLES(us) ((int32_t)(us) * MAXVAL / PERIODUS)
 
+
 void setupServo()
 {
   ledcAttach(PIN, FREQUENCY, RESBIT);
@@ -20,8 +21,10 @@ void loopServo()
   steps =  0;
   int setvalTarget = 0;
   if (joystickTimeout) setvalTarget = ((int)joystickReport.z - 127);
-  if (controlState.servoSetval > 0 && motor2.shaft_velocity > 15) setvalTarget = 50;
-  if (controlState.servoSetval < 0 && motor2.shaft_velocity < -15) setvalTarget = -50;
+  float speedlim = 5.0f - fabs(motor1.shaft_velocity);
+  speedlim = MAX(0.0f, speedlim) * 1.5f + 7.5f;
+  if (controlState.servoSetval > 0 && fabs(motor2.shaft_velocity) > speedlim) setvalTarget = 50;
+  if (controlState.servoSetval < 0 && fabs(motor2.shaft_velocity) > speedlim) setvalTarget = -50;
   if (setvalTarget > 5) controlState.servoSetval = MAX(controlState.servoSetval, 50);
   if (setvalTarget < -5) controlState.servoSetval = MIN(controlState.servoSetval, -50);
   if(setvalTarget > controlState.servoSetval) controlState.servoSetval++;
