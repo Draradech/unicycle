@@ -50,20 +50,30 @@ typedef struct
   float pPartSpeed;
   float pPartPitch;
   float dPartPitch;
+  float pitchWP;
+  float speedFilter;
   float iPartSpeedRoll;
   float pPartSpeedRoll;
   float pPartRoll;
   float dPartRoll;
   float rollWP;
+  float speedRollFilter;
 } SControlPara;
 
 typedef struct
 {
+  float targetSpeed1;
+  float speedFilt1;
+  float targetSpeed2;
+  float speedFilt2;
   float targetPitchI;
   float targetPitch;
   float targetRollI;
   float targetRoll;
-  bool rollActive;
+  bool active;
+  float dynamicTorqueFactor1;
+  float dynamicTorqueFactor2;
+  int servoSetval;
 } SControlState;
 
 typedef struct __attribute__((__packed__)) {
@@ -80,6 +90,8 @@ typedef struct __attribute__((__packed__)) {
 globl joystick_t joystickReport;
 globl uint8_t joystickTimeout;
 globl bool wifiOn;
+globl uint8_t oscillate;
+globl uint8_t correlate;
 globl SSensorData sensorData;
 globl SActuator actuator;
 globl SControlPara controlPara;

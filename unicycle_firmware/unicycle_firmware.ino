@@ -7,6 +7,7 @@ void setup()
   setupMotor();
   setupUI();
   setupBLE();
+  setupServo();
   setupSystem();
 }
 
@@ -14,6 +15,7 @@ void loop2ms()
 {
   loopSensors();
   loopControl();
+  loopServo();
   loopMotor();
   loopUI();
   loopInputOutput();

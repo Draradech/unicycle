@@ -93,4 +93,9 @@ void loopUI()
     if (loop == 25) ledColor(0, 0, 0);
     loop++;
   }
+
+  if (BUTTON(0)) oscillate = true;
+  if (BUTTON(1)) oscillate = false;
+  if (BUTTON(3)) correlate = true;
+  if (BUTTON(4)) correlate = false;
 }

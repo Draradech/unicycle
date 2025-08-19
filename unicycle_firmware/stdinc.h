@@ -26,6 +26,7 @@ void setupMotor();
 void setupUI();
 void setupInputOutput();
 void setupBLE();
+void setupServo();
 
 void loop2ms();
 void loop250us();
@@ -36,6 +37,7 @@ void loopMotor();
 void loopUI();
 void loopInputOutput();
 void loopBLE();
+void loopServo();
 
 void fastLoopMotor();
 
