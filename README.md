@@ -1,4 +1,4 @@
-#One wheel balancing robot (unicycle)
+# One wheel balancing robot (unicycle)
 
 MCU: ESP32S3 (LOLIN S3 Mini)  
 IMU: ICM-20948 (Sparkfun Breakout)  
